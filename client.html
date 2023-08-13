@@ -99,14 +99,12 @@
         };
 
         eventSource.onmessage = function (event) {
-          console.log(event);
           const message = event.data;
           outputDiv.innerHTML += "<p>" + message + "</p>";
           outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
         };
 
         eventSource.onerror = function (event) {
-          console.log(event);
           outputDiv.innerHTML = "Error occurred. Please check your secret key.";
           eventSource.close();
         };
