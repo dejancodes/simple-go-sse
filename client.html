@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SSE Client Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 300px;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #sseOutput {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        max-height: 200px;
+        overflow-y: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>SSE Client</h2>
+      <form id="sseForm">
+        <label for="secretKey">Secret Key:</label>
+        <input type="text" id="secretKey" name="secretKey" />
+
+        <button type="button" onclick="connectSSE()">Connect</button>
+      </form>
+
+      <div id="sseOutput"></div>
+    </div>
+
+    <script>
+      const outputDiv = document.getElementById("sseOutput");
+      let eventSource;
+
+      function connectSSE() {
+        const secretKey = document.getElementById("secretKey").value;
+        if (secretKey === "") {
+          alert("Please enter a secret key.");
+          return;
+        }
+
+        outputDiv.innerHTML = "Connecting...";
+
+        eventSource = new EventSource(`/sse?secretKey=${secretKey}`);
+
+        eventSource.onopen = function (event) {
+          outputDiv.innerHTML = "Connected. Waiting for messages...";
+        };
+
+        eventSource.onmessage = function (event) {
+          console.log(event);
+          const message = event.data;
+          outputDiv.innerHTML += "<p>" + message + "</p>";
+          outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        };
+
+        eventSource.onerror = function (event) {
+          console.log(event);
+          outputDiv.innerHTML = "Error occurred. Please check your secret key.";
+          eventSource.close();
+        };
+      }
+    </script>
+  </body>
+</html>
